@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/user-count-log/precache-manifest.3afdd022b20aa72b3976a6bd3acaabaf.js"
+  "/precache-manifest.e3a808e7cd5c2f78ba81749287b733e9.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "hack-type-count"});
