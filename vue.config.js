@@ -13,13 +13,13 @@ module.exports = {
       start_url: ".",
     },
   },
-  publicPath: "/user-count-log/",
-  // devServer: {
-  //   proxy: {
-  //     "^/api": {
-  //       target: "http://192.168.10.93:8000/crm.php",
-  //       changeOrigin: true,
-  //     },
-  //   },
-  // },
+  publicPath: "/",
+  devServer: {
+    proxy: {
+      "^/api": {
+        target: "http://localhost:8080/api",
+        changeOrigin: true,
+      },
+    },
+  },
 };
