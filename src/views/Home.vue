@@ -23,12 +23,78 @@ export default {
       arrMarkTime: [],
       requestLog: [],
       requestInterval: null,
+      timeStampMouse: 0,
+      mouseLog: [],
     }
   },
   mounted() {
     this.countStart()
+    this.timeStampMouse = +new Date
+    document.addEventListener('mousemove', this.writeMouseLog)
+    document.addEventListener('mousedown', this.writeMouseClickLog)
+    document.addEventListener('mouseup', this.writeMouseClickLog)
+  },
+  beforeDestroy() {
+    document.removeEventListener('mousemove', this.writeMouseLog)
+    document.removeEventListener('mousedown', this.writeMouseClickLog)
+    document.removeEventListener('mouseup', this.writeMouseClickLog)
   },
   methods: {
+    writeMouseLog(e) {
+      const timeStamp = `${new Date(new Date - this.timeStampMouse).getSeconds()}:${new Date(new Date - this.timeStampMouse).getMilliseconds()}`
+      let button = ''
+      switch (e.buttons) {
+        case 0:
+          button = 'NoButton'
+          break
+        case 1:
+          button = 'LeftButton'
+          break
+        case 2:
+          button = 'RightButton'
+          break
+        case 4:
+          button = 'MiddleButton'
+          break
+        case 8:
+          button = 'BackButton'
+          break
+        case 16:
+          button = 'ForwardButton'
+          break
+      }
+      const state = e.buttons ? 'drag' : 'move'
+      const log = [timeStamp, button, state, e.x, e.y]
+      this.mouseLog.push(log)
+    },
+    writeMouseClickLog(e) {
+      const timeStamp = `${new Date(new Date - this.timeStampMouse).getSeconds()}:${new Date(new Date - this.timeStampMouse).getMilliseconds()}`
+      let button = ''
+      switch (e.buttons) {
+        case 0:
+          button = 'NoButton'
+          break
+        case 1:
+          button = 'LeftButton'
+          break
+        case 2:
+          button = 'RightButton'
+          break
+        case 4:
+          button = 'MiddleButton'
+          break
+        case 8:
+          button = 'BackButton'
+          break
+        case 16:
+          button = 'ForwardButton'
+          break
+      }
+      const state = e.type === 'mousedown' ? 'Pressed' : 'Released'
+      const log = [timeStamp, button, state, e.x, e.y]
+      this.mouseLog.push(log)
+    },
+
     countStart() {
       if (this.arrMarkTime.length)
         this.sendRequest()
@@ -46,15 +112,24 @@ export default {
       this.arrMarkTime.push(countedTime)
     },
     async sendRequest() {
-      const userTypeLog = JSON.stringify(this.arrMarkTime)
+      const payload = JSON.stringify({
+        typeLog: this.arrMarkTime,
+        mouseLog: this.mouseLog,
+      })
+
+      this.timeStamp = +new Date
+      this.timeStampMouse = +new Date
+
+      if (!this.arrMarkTime.length)
+        return
 
       this.arrMarkTime = []
-      this.timeStamp = +new Date
+      this.mouseLog = []
 
       const request = await fetch('/api', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: userTypeLog,
+        body: payload,
       })
       this.requestLog.push(request)
     },
